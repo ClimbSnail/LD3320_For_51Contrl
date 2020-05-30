@@ -1,0 +1,1 @@
+-c --device DARMSTM -g -O0 --apcs=interwork -I..\M3lib\inc -I..\user -I..\LD_Driver -I "C:\Ding program file\keil\\ARM\INC\ST\STM32F10x" -DUSE_STDPERIPH_DRIVER -o ".\Obj\reg_rw.o" --omf_browse ".\Obj\reg_rw.crf" --depend ".\Obj\reg_rw.d" "..\LD_Driver\Reg_RW.c"

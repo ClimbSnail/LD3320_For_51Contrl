@@ -1,0 +1,91 @@
+C51 COMPILER V9.00   USART                                                                 03/02/2013 15:05:15 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE USART
+OBJECT MODULE PLACED IN ..\obj\usart.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\user\usart.c BROWSE INCDIR(..\code;..\user) DEBUG OBJECTEXTEND PRINT(.\u
+                    -sart.lst) OBJECT(..\obj\usart.obj)
+
+line level    source
+
+   1          /******************** 乐声创意电子工作室 ***************
+   2          * File Name          : usart.c
+   3          * Author             : http://yuesheng001.taobao.com/
+   4          * Version                                                : zds0.0.3
+   5          * Date First Issued  : 10/12/2011
+   6          * Description        : 串口API
+   7                                                                                                  CPU: STC89LE52
+   8                                                                                                  晶振：22.1184MHZ
+   9                                                                                                  波特率：9600 bit/S      
+  10          *******************************************************/
+  11          #include "config.h"
+  12          
+  13          /************************************************************************
+  14          函 数 名： 串口初始化
+  15          功能描述： STC10L08XE 单片机串口初始化函数
+  16          返回函数： none
+  17          其他说明： none
+  18          **************************************************************************/
+  19          void UartIni(void)
+  20          {
+  21   1              
+  22   1              SCON = 0x50 ; //SCON: serail mode 1, 8-bit UART, enable ucvr  
+  23   1              
+  24   1              TMOD |= 0x20 ; //TMOD: timer 1, mode 2, 8-bit reload 
+  25   1              
+  26   1              PCON |= 0x80 ; //SMOD=1; 
+  27   1              
+  28   1              TH1 = 0xF4 ; //Baud:9600 fosc=22.1148MHz 
+  29   1              
+  30   1              IE |= 0x90 ; //Enable Serial Interrupt 
+  31   1              
+  32   1              TR1 = 1 ; // timer 1 run 
+  33   1              ES=1;
+  34   1              EA=1;
+  35   1      }
+  36          /************************************************************************
+  37          功能描述：      串口发送一字节数据
+  38          入口参数：      DAT:带发送的数据
+  39          返 回 值：      none
+  40          其他说明：      none
+  41          **************************************************************************/
+  42          void UARTSendByte(uint8_t DAT)
+  43          {
+  44   1              ES  =  0;
+  45   1              TI=0;
+  46   1              SBUF = DAT;
+  47   1              while(TI==0);
+  48   1              TI=0;
+  49   1              ES = 1;
+  50   1      }
+  51          
+  52          /************************************************************************
+  53          功能描述： 串口发送字符串数据
+  54          入口参数：      *DAT：字符串指针
+C51 COMPILER V9.00   USART                                                                 03/02/2013 15:05:15 PAGE 2   
+
+  55          返 回 值： none
+  56          其他说明： API 供外部使用，直观！
+  57          **************************************************************************/
+  58          void PrintCom(uint8_t *DAT)
+  59          {
+  60   1              while(*DAT)
+  61   1              {
+  62   2                      UARTSendByte(*DAT++);
+  63   2              }       
+  64   1      }
+  65          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     73    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

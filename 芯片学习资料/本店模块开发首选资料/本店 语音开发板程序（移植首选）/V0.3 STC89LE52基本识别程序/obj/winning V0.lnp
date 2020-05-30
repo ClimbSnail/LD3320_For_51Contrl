@@ -1,0 +1,6 @@
+"..\obj\main.obj",
+"..\obj\Reg_RW.obj",
+"..\obj\LDChip.obj",
+"..\obj\usart.obj" 
+TO "..\obj\winning V0.2" 
+PRINT(".\winning V0.m51") RAMSIZE(256) 

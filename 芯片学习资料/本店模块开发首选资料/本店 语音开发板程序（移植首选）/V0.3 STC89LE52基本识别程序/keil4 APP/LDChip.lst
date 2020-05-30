@@ -1,0 +1,315 @@
+C51 COMPILER V9.00   LDCHIP                                                                03/02/2013 15:05:15 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE LDCHIP
+OBJECT MODULE PLACED IN ..\obj\LDChip.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\code\LDChip.c BROWSE INCDIR(..\code;..\user) DEBUG OBJECTEXTEND PRINT(.\
+                    -LDChip.lst) OBJECT(..\obj\LDChip.obj)
+
+line level    source
+
+   1          /************************************************************************************
+   2          **      CPU: STC89LE52
+   3          **      ¾§Õñ£º22.1184MHZ
+   4          **      ²¨ÌØÂÊ£º9600 bit/S
+   5          **      ÅäÌ×²úÆ·ĞÅÏ¢£ºLD3320 ·ÇÌØ¶¨ÓïÒôÄ£¿é ¿ª·¢°å
+   6          **                http://yuesheng001.taobao.com/
+   7          **  °æ±¾£ºzds0.0.3
+   8          **  ĞŞ¸ÄÈÕÆÚ£º2011.12.10
+   9          /************************************************************************************/
+  10          #include "config.h"
+  11          
+  12          extern void  delay(unsigned long uldata);
+  13          
+  14          uint8 idata ucRegVal;
+  15          extern uint8 idata nAsrStatus;
+  16          
+  17          void ProcessInt0(void);
+  18          
+  19          /************************************************************************
+  20          ¹¦ÄÜÃèÊö£º       ¸´Î»LDÄ£¿é
+  21          Èë¿Ú²ÎÊı£º       none
+  22          ·µ »Ø Öµ£º       none
+  23          ÆäËûËµÃ÷£º       none
+  24          **************************************************************************/
+  25          void LD_Reset()
+  26          {
+  27   1              RSTB=1;
+  28   1              delay(1);
+  29   1              RSTB=0;
+  30   1              delay(1);
+  31   1              RSTB=1;
+  32   1      
+  33   1              delay(1);
+  34   1              CSB=0;
+  35   1              delay(1);
+  36   1              CSB=1;
+  37   1              delay(1);
+  38   1      }
+  39          /************************************************************************
+  40          ¹¦ÄÜÃèÊö£º LDÄ£¿éÃüÁî³õÊ¼»¯
+  41          Èë¿Ú²ÎÊı£º none
+  42          ·µ »Ø Öµ£º none
+  43          ÆäËûËµÃ÷£º ¸Ãº¯ÊıÎª³ö³§ÅäÖÃ£¬Ò»°ã²»ĞèÒªĞŞ¸Ä£»
+  44                                                   ÓĞĞËÈ¤µÄ¿Í»§¿É¶ÔÕÕ¿ª·¢ÊÖ²á¸ù¾İĞèÒª×ÔĞĞĞŞ¸Ä¡£
+  45          **************************************************************************/
+  46          void LD_Init_Common()
+  47          {
+  48   1              LD_ReadReg(0x06);  
+  49   1              LD_WriteReg(0x17, 0x35); 
+  50   1              delay(10);
+  51   1              LD_ReadReg(0x06);  
+  52   1      
+  53   1              LD_WriteReg(0x89, 0x03);  
+  54   1              delay(5);
+C51 COMPILER V9.00   LDCHIP                                                                03/02/2013 15:05:15 PAGE 2   
+
+  55   1              LD_WriteReg(0xCF, 0x43);   
+  56   1              delay(5);
+  57   1              LD_WriteReg(0xCB, 0x02);
+  58   1              
+  59   1              /*PLL setting*/
+  60   1              LD_WriteReg(0x11, LD_PLL_11);       
+  61   1      
+  62   1              LD_WriteReg(0x1E,0x00);
+  63   1              LD_WriteReg(0x19, LD_PLL_ASR_19); 
+  64   1              LD_WriteReg(0x1B, LD_PLL_ASR_1B);               
+  65   1        LD_WriteReg(0x1D, LD_PLL_ASR_1D);
+  66   1              delay(10);
+  67   1              
+  68   1              LD_WriteReg(0xCD, 0x04);
+  69   1              LD_WriteReg(0x17, 0x4c); 
+  70   1              delay(5);
+  71   1              LD_WriteReg(0xB9, 0x00);
+  72   1              LD_WriteReg(0xCF, 0x4F); 
+  73   1              LD_WriteReg(0x6F, 0xFF); 
+  74   1      }
+  75          
+  76          /************************************************************************
+  77          ¹¦ÄÜÃèÊö£º       LDÄ£¿é ASR¹¦ÄÜ³õÊ¼»¯
+  78          Èë¿Ú²ÎÊı£º       none
+  79          ·µ »Ø Öµ£º       none
+  80          ÆäËûËµÃ÷£º       ¸Ãº¯ÊıÎª³ö³§ÅäÖÃ£¬Ò»°ã²»ĞèÒªĞŞ¸Ä£»
+  81                                                   ÓĞĞËÈ¤µÄ¿Í»§¿É¶ÔÕÕ¿ª·¢ÊÖ²á¸ù¾İĞèÒª×ÔĞĞĞŞ¸Ä¡£
+  82          **************************************************************************/
+  83          void LD_Init_ASR()
+  84          {
+  85   1              LD_Init_Common();
+  86   1      
+  87   1              LD_WriteReg(0xBD, 0x00);
+  88   1              LD_WriteReg(0x17, 0x48);
+  89   1              delay( 10 );
+  90   1      
+  91   1              LD_WriteReg(0x3C, 0x80);    
+  92   1              LD_WriteReg(0x3E, 0x07);
+  93   1              LD_WriteReg(0x38, 0xff);    
+  94   1              LD_WriteReg(0x3A, 0x07);
+  95   1              
+  96   1              LD_WriteReg(0x40, 0);          
+  97   1              LD_WriteReg(0x42, 8);
+  98   1              LD_WriteReg(0x44, 0);    
+  99   1              LD_WriteReg(0x46, 8); 
+ 100   1              delay( 1 );
+ 101   1      }
+ 102          
+ 103          /************************************************************************
+ 104          ¹¦ÄÜÃèÊö£º      ÖĞ¶Ï´¦Àíº¯Êı
+ 105          Èë¿Ú²ÎÊı£º       none
+ 106          ·µ »Ø Öµ£º       none
+ 107          ÆäËûËµÃ÷£º      µ±LDÄ£¿é½ÓÊÕµ½ÒôÆµĞÅºÅÊ±£¬½«½øÈë¸Ãº¯Êı£¬
+ 108                                                          ÅĞ¶ÏÊ¶±ğÊÇ·ñÓĞ½á¹û£¬Èç¹ûÃ»ÓĞ´ÓĞÂÅäÖÃ¼Ä
+ 109                      ´æÆ÷×¼±¸ÏÂÒ»´ÎµÄÊ¶±ğ¡£
+ 110          **************************************************************************/
+ 111          void ProcessInt0(void)
+ 112          {
+ 113   1              uint8 nAsrResCount=0;
+ 114   1      
+ 115   1              EX0=0;
+ 116   1              ucRegVal = LD_ReadReg(0x2B);
+C51 COMPILER V9.00   LDCHIP                                                                03/02/2013 15:05:15 PAGE 3   
+
+ 117   1              LD_WriteReg(0x29,0) ;
+ 118   1              LD_WriteReg(0x02,0) ;
+ 119   1              if((ucRegVal & 0x10) &&
+ 120   1                      LD_ReadReg(0xb2)==0x21 && 
+ 121   1                      LD_ReadReg(0xbf)==0x35)                 /*Ê¶±ğ³É¹¦*/
+ 122   1              {       
+ 123   2                      nAsrResCount = LD_ReadReg(0xba);
+ 124   2                      if(nAsrResCount>0 && nAsrResCount<=4) 
+ 125   2                      {
+ 126   3                              nAsrStatus=LD_ASR_FOUNDOK;
+ 127   3                      }
+ 128   2                      else
+ 129   2                  {
+ 130   3                              nAsrStatus=LD_ASR_FOUNDZERO;
+ 131   3                      }       
+ 132   2              }                                                                                                                        /*Ã»ÓĞÊ¶±ğ½á¹û*/
+ 133   1              else
+ 134   1              {        
+ 135   2                      nAsrStatus=LD_ASR_FOUNDZERO;
+ 136   2              }
+ 137   1                      
+ 138   1        LD_WriteReg(0x2b, 0);
+ 139   1        LD_WriteReg(0x1C,0);/*Ğ´0:ADC²»¿ÉÓÃ*/
+ 140   1      
+ 141   1              LD_WriteReg(0x29,0) ;
+ 142   1              LD_WriteReg(0x02,0) ;
+ 143   1              LD_WriteReg(0x2B,  0);
+ 144   1              LD_WriteReg(0xBA, 0);   
+ 145   1              LD_WriteReg(0xBC,0);    
+ 146   1              LD_WriteReg(0x08,1);     /*Çå³ıFIFO_DATA*/
+ 147   1              LD_WriteReg(0x08,0);    /*Çå³ıFIFO_DATAºó ÔÙ´ÎĞ´0*/
+ 148   1      
+ 149   1      
+ 150   1              EX0=1;
+ 151   1      }
+ 152          
+ 153          /************************************************************************
+ 154          ¹¦ÄÜÃèÊö£º  ¼ì²âLDÄ£¿éÊÇ·ñ¿ÕÏĞ
+ 155          Èë¿Ú²ÎÊı£º      none
+ 156          ·µ »Ø Öµ£º      flag£º1-> ¿ÕÏĞ
+ 157          ÆäËûËµÃ÷£º      none
+ 158          **************************************************************************/
+ 159          uint8 LD_Check_ASRBusyFlag_b2()
+ 160          {
+ 161   1              uint8 j;
+ 162   1              uint8 flag = 0;
+ 163   1              for (j=0; j<10; j++)
+ 164   1              {
+ 165   2                      if (LD_ReadReg(0xb2) == 0x21)
+ 166   2                      {
+ 167   3                              flag = 1;
+ 168   3                              break;
+ 169   3                      }
+ 170   2                      delay(10);              
+ 171   2              }
+ 172   1              return flag;
+ 173   1      }
+ 174          /************************************************************************
+ 175          ¹¦ÄÜÃèÊö£º      Æô¶¯ASR
+ 176          Èë¿Ú²ÎÊı£º      none
+ 177          ·µ »Ø Öµ£º      none
+ 178          ÆäËûËµÃ÷£º      none
+C51 COMPILER V9.00   LDCHIP                                                                03/02/2013 15:05:15 PAGE 4   
+
+ 179          **************************************************************************/
+ 180          void LD_AsrStart()
+ 181          {
+ 182   1              LD_Init_ASR();
+ 183   1      }
+ 184          /************************************************************************
+ 185          ¹¦ÄÜÃèÊö£º      ÔËĞĞASR
+ 186          Èë¿Ú²ÎÊı£º      none
+ 187          ·µ »Ø Öµ£º      1£ºÆô¶¯³É¹¦
+ 188          ÆäËûËµÃ÷£º      none
+ 189          **************************************************************************/
+ 190          uint8 LD_AsrRun()
+ 191          {
+ 192   1              EX0=0;
+ 193   1              LD_WriteReg(0x35, MIC_VOL);
+ 194   1              LD_WriteReg(0x1C, 0x09);
+ 195   1              LD_WriteReg(0xBD, 0x20);
+ 196   1              LD_WriteReg(0x08, 0x01);
+ 197   1              delay( 1 );
+ 198   1              LD_WriteReg(0x08, 0x00);
+ 199   1              delay( 1 );
+ 200   1      
+ 201   1              if(LD_Check_ASRBusyFlag_b2() == 0)
+ 202   1              {
+ 203   2                      return 0;
+ 204   2              }
+ 205   1      //      LD_WriteReg(0xB6, 0xa); //Ê¶±ğÊ±¼ä       1S
+ 206   1      //      LD_WriteReg(0xB5, 0x1E); //±³¾°Òô¶ÎÊ±¼ä 300ms
+ 207   1      //      LD_WriteReg(0xB8, 10); //½áÊøÊ±¼ä
+ 208   1      
+ 209   1      //      LD_WriteReg(0x1C, 0x07); //ÅäÖÃË«Í¨µÀÒôÆµĞÅºÅ×öÎªÊäÈëĞÅºÅ
+ 210   1              LD_WriteReg(0x1C, 0x0b); //ÅäÖÃÂó¿Ë·ç×öÎªÊäÈëĞÅºÅ
+ 211   1      
+ 212   1      
+ 213   1              LD_WriteReg(0xB2, 0xff);
+ 214   1              delay( 1);      
+ 215   1              LD_WriteReg(0x37, 0x06);
+ 216   1              delay( 1 );
+ 217   1          LD_WriteReg(0x37, 0x06);
+ 218   1                      delay( 5 );
+ 219   1              LD_WriteReg(0x29, 0x10);
+ 220   1              
+ 221   1              LD_WriteReg(0xBD, 0x00);
+ 222   1              EX0=1;
+ 223   1              return 1;
+ 224   1      }
+ 225          /************************************************************************
+ 226          ¹¦ÄÜÃèÊö£º ÏòLDÄ£¿éÌí¼Ó¹Ø¼ü´Ê
+ 227          Èë¿Ú²ÎÊı£º none
+ 228          ·µ »Ø Öµ£º flag£º1->Ìí¼Ó³É¹¦
+ 229          ÆäËûËµÃ÷£º ÓÃ»§ĞŞ¸Ä.
+ 230                                                   1¡¢¸ù¾İÈçÏÂ¸ñÊ½Ìí¼ÓÆ´Òô¹Ø¼ü´Ê£¬Í¬Ê±×¢ÒâĞŞ¸ÄsRecog ºÍpCode Êı×éµÄ³¤¶È
+ 231                                                   ºÍ¶ÔÓ¦±äÁËkµÄÑ­»·ÖÃ¡£Æ´Òô´®ºÍÊ¶±ğÂëÊÇÒ»Ò»¶ÔÓ¦µÄ¡£
+ 232                                                   2¡¢¿ª·¢Õß¿ÉÒÔÑ§Ï°"ÓïÒôÊ¶±ğĞ¾Æ¬LD3320¸ß½×ÃØ¼®.pdf"ÖĞ
+ 233                     ¹ØÓÚÀ¬»ø´ÊÓïÎüÊÕ´íÎóµÄÓÃ·¨£¬À´Ìá¹©Ê¶±ğĞ§¹û¡£
+ 234          **************************************************************************/
+ 235          uint8 LD_AsrAddFixed()
+ 236          {
+ 237   1              uint8 k, flag;
+ 238   1              uint8 nAsrAddLength;
+ 239   1               uint8 code sRecog[4][20] = {"","kai fa ban yan zheng", "dai ma ce shi","jian cha wan bi"};     /*Ìí¼Ó¹Ø¼ü´Ê£
+             -¬ÓÃ»§ĞŞ¸Ä*/
+C51 COMPILER V9.00   LDCHIP                                                                03/02/2013 15:05:15 PAGE 5   
+
+ 240   1               uint8 code pCode[4] = {0,CODE_KFBYZ, CODE_DMCS, CODE_JCWB};    /*Ìí¼ÓÊ¶±ğÂë£¬ÓÃ»§ĞŞ¸Ä*/        
+ 241   1              flag = 1;
+ 242   1              for (k=0; k<4; k++)
+ 243   1              {
+ 244   2                              
+ 245   2                      if(LD_Check_ASRBusyFlag_b2() == 0)
+ 246   2                      {
+ 247   3                              flag = 0;
+ 248   3                              break;
+ 249   3                      }
+ 250   2                      
+ 251   2                      LD_WriteReg(0xc1, pCode[k] );
+ 252   2                      LD_WriteReg(0xc3, 0 );
+ 253   2                      LD_WriteReg(0x08, 0x04);
+ 254   2                      delay(1);
+ 255   2                      LD_WriteReg(0x08, 0x00);
+ 256   2                      delay(1);
+ 257   2      
+ 258   2                      for (nAsrAddLength=0; nAsrAddLength<20; nAsrAddLength++)
+ 259   2                      {
+ 260   3                              if (sRecog[k][nAsrAddLength] == 0)
+ 261   3                                      break;
+ 262   3                              LD_WriteReg(0x5, sRecog[k][nAsrAddLength]);
+ 263   3                      }
+ 264   2                      LD_WriteReg(0xb9, nAsrAddLength);
+ 265   2                      LD_WriteReg(0xb2, 0xff);
+ 266   2                      LD_WriteReg(0x37, 0x04);
+ 267   2              }
+ 268   1          return flag;
+ 269   1      }
+ 270          /************************************************************************
+ 271          ¹¦ÄÜÃèÊö£º      »ñÈ¡Ê¶±ğ½á¹û
+ 272          Èë¿Ú²ÎÊı£º      none
+ 273          ·µ »Ø Öµ£º      LD_ReadReg(0xc5 )£»  ¶ÁÈ¡ÄÚ²¿¼Ä´æÆ÷·µ»ØÊ¶±ğÂë¡£
+ 274          ÆäËûËµÃ÷£º      none
+ 275          **************************************************************************/
+ 276          uint8 LD_GetResult()
+ 277          {               
+ 278   1              return LD_ReadReg(0xc5 );
+ 279   1      }
+ 280          
+ 281          
+ 282          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    825    ----
+   CONSTANT SIZE    =     84    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       6
+   IDATA SIZE       =      1    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

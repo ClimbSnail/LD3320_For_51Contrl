@@ -1,0 +1,227 @@
+C51 COMPILER V9.00   MAIN                                                                  03/02/2013 15:05:15 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN ..\obj\main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\code\main.c BROWSE INCDIR(..\code;..\user) DEBUG OBJECTEXTEND PRINT(.\ma
+                    -in.lst) OBJECT(..\obj\main.obj)
+
+line level    source
+
+   1          /************************************************************************************
+   2          **      版权所有：Copyright (c) 2005 - 2010 ICRoute INC.
+   3          **      CPU: STC89LE52
+   4          **      晶振：22.1184MHZ
+   5          **      波特率：9600 bit/S
+   6          **      配套产品信息：LD3320 非特定语音模块 开发板
+   7          **                http://yuesheng001.taobao.com/
+   8          **  版本：zds0.0.3
+   9          **  修改日期：2011.12.10
+  10          **  说明：本工程只具有 语音识别功能。属基本驱动代码，
+  11                                                  附加串口、74HC595驱动功能，如不需要用到可
+  12                                                  屏蔽删除，根据需要自行移植到相关的单片机上。
+  13          /************************************************************************************/
+  14          #include "config.h"
+  15          
+  16          /************************************************************************************/
+  17          //      nAsrStatus 用来在main主程序中表示程序运行的状态，不是LD3320芯片内部的状态寄存器
+  18          //      LD_ASR_NONE:            表示没有在作ASR识别
+  19          //      LD_ASR_RUNING：         表示LD3320正在作ASR识别中
+  20          //      LD_ASR_FOUNDOK:         表示一次识别流程结束后，有一个识别结果
+  21          //      LD_ASR_FOUNDZERO:       表示一次识别流程结束后，没有识别结果
+  22          //      LD_ASR_ERROR:           表示一次识别流程中LD3320芯片内部出现不正确的状态
+  23          /***********************************************************************************/
+  24          uint8 idata nAsrStatus=0;       
+  25          extern void   _nop_     (void); 
+  26          void MCU_init(); 
+  27          uint8 RunASR();
+  28          void ProcessInt0(); //识别处理函数
+  29          void  delay(unsigned long uldata);
+  30          /************************************************************************
+  31          功能描述： 主函数程序入口
+  32          入口参数：      none
+  33          返 回 值：      none
+  34          其他说明：      none
+  35          **************************************************************************/
+  36          void  main()
+  37          {
+  38   1              uint8 idata nAsrRes;
+  39   1              uint8 i=0;
+  40   1      
+  41   1              MCU_init();
+  42   1              LD_Reset();
+  43   1              UartIni(); /*串口初始化*/
+  44   1              nAsrStatus = LD_ASR_NONE;               //      初始状态：没有在作ASR
+  45   1              PrintCom("串口运行中....\n"); /*text.....*/
+  46   1              PrintCom("口令：1、代码测试\n"); /*text.....*/
+  47   1              PrintCom("      2、开发板验证\n"); /*text.....*/
+  48   1              PrintCom("      3、检查完毕\n"); /*text.....*/
+  49   1      
+  50   1              while(1)
+  51   1              {
+  52   2                      switch(nAsrStatus)
+  53   2                      {
+  54   3                              case LD_ASR_RUNING:
+C51 COMPILER V9.00   MAIN                                                                  03/02/2013 15:05:15 PAGE 2   
+
+  55   3                              case LD_ASR_ERROR:              
+  56   3                                      break;
+  57   3                              case LD_ASR_NONE:
+  58   3                              {
+  59   4                                      nAsrStatus=LD_ASR_RUNING;
+  60   4                                      if (RunASR()==0)        /*      启动一次ASR识别流程：ASR初始化，ASR添加关键词语，启动ASR运算*/
+  61   4                                      {
+  62   5                                              nAsrStatus = LD_ASR_ERROR;
+  63   5                                      }
+  64   4                                      break;
+  65   4                              }
+  66   3      
+  67   3                              case LD_ASR_FOUNDOK: /* 一次ASR识别流程结束，去取ASR识别结果*/
+  68   3                              {
+  69   4                                      
+  70   4                                      nAsrRes = LD_GetResult();               /*获取结果*/
+  71   4                                      PrintCom("\n识别码:"); /*text.....*/
+  72   4              UARTSendByte(nAsrRes+0x30); /*text.....*/                               
+  73   4                                       switch(nAsrRes)                   /*对结果执行相关操作,客户修改*/
+  74   4                                        {
+  75   5                                                case CODE_DMCS:                       /*命令“测试”*/
+  76   5                                                              PrintCom("“代码测试”命令识别成功\n"); /*text.....*/
+  77   5                                                                                                                       break;
+  78   5                                                      case CODE_KFBYZ:         /*命令“全开”*/
+  79   5                                                              PrintCom("“开发板验证”命令识别成功\n"); /*text.....*/
+  80   5                                                                                                                       break;
+  81   5                                                      case CODE_JCWB:         /*命令“复位”*/
+  82   5                                      
+  83   5                                                              PrintCom("“检查完毕”命令识别成功\n"); /*text.....*/
+  84   5                                                                                                                      break;
+  85   5                                                      default:break;
+  86   5                                              }                               
+  87   4      
+  88   4                                      nAsrStatus = LD_ASR_NONE;
+  89   4                                      break;
+  90   4                              }
+  91   3                              case LD_ASR_FOUNDZERO:
+  92   3                              default:
+  93   3                              {
+  94   4                                      nAsrStatus = LD_ASR_NONE;
+  95   4                                      break;
+  96   4                              }
+  97   3                      }// switch       
+  98   2              }// while
+  99   1      
+ 100   1      }
+ 101          /************************************************************************
+ 102          功能描述：      单片机初始化
+ 103          入口参数：
+ 104          返 回 值： 
+ 105          其他说明：
+ 106          **************************************************************************/
+ 107          void MCU_init()
+ 108          {
+ 109   1              P0 = 0xff;
+ 110   1              P1 = 0xff;
+ 111   1              P2 = 0xff;
+ 112   1              P3 = 0xf7;
+ 113   1      
+ 114   1      #if defined (SOFT_SPI_PORT)             //      软件模拟SPI读写
+                      LD_MODE = 1;                            //      设置MD管脚为高
+              #elif defined (HARD_SPI_PORT)   //      硬件实现SPI读写
+C51 COMPILER V9.00   MAIN                                                                  03/02/2013 15:05:15 PAGE 3   
+
+                      LD_MODE = 1;                            //      设置MD管脚为高
+              #else                                                   //      并行读写 （硬件实现或者软件模拟）
+ 119   1              LD_MODE = 0;                            //      设置MD管脚为低
+ 120   1      #endif
+ 121   1              IE0=1;
+ 122   1              EX0=1;
+ 123   1              EA=1;
+ 124   1      }
+ 125          
+ 126          /************************************************************************
+ 127          功能描述： 延时函数
+ 128          调用函数： 
+ 129          入口参数： 
+ 130          返回函数： 
+ 131          **************************************************************************/
+ 132          void  delay(unsigned long uldata)
+ 133          {
+ 134   1              unsigned int j  =  0;
+ 135   1              unsigned int g  =  0;
+ 136   1              for (j=0;j<5;j++)
+ 137   1              {
+ 138   2                      for (g=0;g<uldata;g++)
+ 139   2                      {
+ 140   3                              _nop_();
+ 141   3                              _nop_();
+ 142   3                              _nop_();
+ 143   3                      }
+ 144   2              }
+ 145   1      }
+ 146          /************************************************************************
+ 147          功能描述：      运行ASR识别流程
+ 148          入口参数：      none
+ 149          返 回 值：  asrflag：1->启动成功， 0—>启动失败
+ 150          其他说明：      识别顺序如下:
+ 151                                                          1、RunASR()函数实现了一次完整的ASR语音识别流程
+ 152                                                          2、LD_AsrStart() 函数实现了ASR初始化
+ 153                                                          3、LD_AsrAddFixed() 函数实现了添加关键词语到LD3320芯片中
+ 154                                                          4、LD_AsrRun()  函数启动了一次ASR语音识别流程                                   
+ 155                                                          任何一次ASR识别流程，都需要按照这个顺序，从初始化开始
+ 156          **************************************************************************/
+ 157          uint8 RunASR()
+ 158          {
+ 159   1              uint8 i=0;
+ 160   1              uint8 asrflag=0;
+ 161   1              for (i=0; i<5; i++)                     //      防止由于硬件原因导致LD3320芯片工作不正常，所以一共尝试5次启动ASR识别流程
+ 162   1              {
+ 163   2                      LD_AsrStart();
+ 164   2                      delay(100);
+ 165   2                      if (LD_AsrAddFixed()==0)
+ 166   2                      {
+ 167   3                              LD_Reset();                     //      LD3320芯片内部出现不正常，立即重启LD3320芯片
+ 168   3                              delay(100);                     //      并从初始化开始重新ASR识别流程
+ 169   3                              continue;
+ 170   3                      }
+ 171   2                      delay(10);
+ 172   2                      if (LD_AsrRun() == 0)
+ 173   2                      {
+ 174   3                              LD_Reset();                     //      LD3320芯片内部出现不正常，立即重启LD3320芯片
+ 175   3                              delay(100);                     //      并从初始化开始重新ASR识别流程
+ 176   3                              continue;
+ 177   3                      }
+ 178   2                      asrflag=1;
+C51 COMPILER V9.00   MAIN                                                                  03/02/2013 15:05:15 PAGE 4   
+
+ 179   2                      break;                                  //      ASR流程启动成功，退出当前for循环。开始等待LD3320送出的中断信号
+ 180   2              }
+ 181   1      
+ 182   1              return asrflag;
+ 183   1      }
+ 184          /************************************************************************
+ 185          功能描述： 中断处理函数
+ 186          调用函数： 
+ 187          入口参数： 
+ 188          返回函数： 
+ 189          **************************************************************************/
+ 190          void ExtInt0Handler(void) interrupt 0  
+ 191          {       
+ 192   1              ProcessInt0();                          //      LD3320 送出中断信号，包括ASR和播放MP3的中断，需要在中断处理函数中分别处理
+ 193   1              PrintCom("进入中断/n"); /*text.....*/
+ 194   1      }
+ 195          
+ 196          
+ 197          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    384    ----
+   CONSTANT SIZE    =    165    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       9
+   IDATA SIZE       =      1       1
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

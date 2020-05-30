@@ -1,0 +1,136 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Project:</h2>
+D:\工作台\第二期winning 开发资料\STC10L08XE 单片机开发板资料\V0.2基本识别程序\keil4 APP\winning V0.2.uvproj
+Project File Date:  12/18/2011
+
+<h2>Output:</h2>
+Build target 'V0.2 基本识别'
+compiling main.c...
+..\CODE\CONFIG.H(27): warning C318: can't open file '74HC595.H'
+..\CODE\CONFIG.H(28): warning C318: can't open file 'usart.h'
+..\CODE\MAIN.C(42): warning C206: 'HC595_Init': missing function-prototype
+..\CODE\MAIN.C(44): warning C206: 'UartIni': missing function-prototype
+..\CODE\MAIN.C(67): warning C206: 'PrintCom': missing function-prototype
+..\CODE\MAIN.C(67): error C267: 'PrintCom': requires ANSI-style prototype
+compiling Reg_RW.c...
+..\CODE\CONFIG.H(27): warning C318: can't open file '74HC595.H'
+..\CODE\CONFIG.H(28): warning C318: can't open file 'usart.h'
+compiling LDChip.c...
+..\CODE\CONFIG.H(27): warning C318: can't open file '74HC595.H'
+..\CODE\CONFIG.H(28): warning C318: can't open file 'usart.h'
+compiling usart.c...
+..\user\usart.c(11): warning C318: can't open file 'config.h'
+..\USER\USART.C(21): error C202: 'SCON': undefined identifier
+..\USER\USART.C(22): error C202: 'BRT': undefined identifier
+..\USER\USART.C(23): error C202: 'AUXR': undefined identifier
+..\USER\USART.C(24): error C202: 'ES': undefined identifier
+..\USER\USART.C(25): error C202: 'EA': undefined identifier
+..\USER\USART.C(33): error C141: syntax error near 'DAT', expected ')'
+..\USER\USART.C(35): error C202: 'ES': undefined identifier
+..\USER\USART.C(36): error C202: 'TI': undefined identifier
+..\USER\USART.C(37): error C202: 'SBUF': undefined identifier
+..\USER\USART.C(38): error C202: 'TI': undefined identifier
+..\USER\USART.C(39): error C202: 'TI': undefined identifier
+..\USER\USART.C(40): error C202: 'ES': undefined identifier
+..\USER\USART.C(49): error C141: syntax error near '*', expected ')'
+..\USER\USART.C(51): error C202: 'DAT': undefined identifier
+..\USER\USART.C(53): error C202: 'DAT': undefined identifier
+Target not created
+Build target 'V0.2 基本识别'
+compiling main.c...
+compiling Reg_RW.c...
+compiling LDChip.c...
+compiling usart.c...
+linking...
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?_PRINTCOM?USART
+    CALLER1: ?PR?EXTINT0HANDLER?MAIN
+    CALLER2: ?C_C51STARTUP
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  HC595_INIT
+    MODULE:  ..\obj\main.obj (MAIN)
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  _HC_ONLYSEL
+    MODULE:  ..\obj\main.obj (MAIN)
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  _HC_MULSEL
+    MODULE:  ..\obj\main.obj (MAIN)
+*** WARNING L1: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  RES_RELAY
+    MODULE:  ..\obj\main.obj (MAIN)
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  HC595_INIT
+    MODULE:  ..\obj\main.obj (MAIN)
+    ADDRESS: 012DH
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _HC_ONLYSEL
+    MODULE:  ..\obj\main.obj (MAIN)
+    ADDRESS: 018AH
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _HC_MULSEL
+    MODULE:  ..\obj\main.obj (MAIN)
+    ADDRESS: 01A8H
+*** WARNING L2: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  RES_RELAY
+    MODULE:  ..\obj\main.obj (MAIN)
+    ADDRESS: 01C6H
+Program Size: data=99.0 xdata=0 code=1945
+creating hex file from "..\obj\winning V0.2"...
+"..\obj\winning V0.2" - 0 Error(s), 9 Warning(s).
+Build target 'V0.2 基本识别'
+compiling main.c...
+compiling Reg_RW.c...
+compiling LDChip.c...
+compiling usart.c...
+linking...
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?_PRINTCOM?USART
+    CALLER1: ?PR?EXTINT0HANDLER?MAIN
+    CALLER2: ?C_C51STARTUP
+Program Size: data=99.0 xdata=0 code=1862
+creating hex file from "..\obj\winning V0.2"...
+"..\obj\winning V0.2" - 0 Error(s), 1 Warning(s).
+Build target 'V0.2 基本识别'
+compiling main.c...
+compiling Reg_RW.c...
+..\CODE\REG_RW.C(27): warning C206: '_nop_': missing function-prototype
+..\CODE\REG_RW.C(27): error C264: intrinsic '_nop_': declaration/activation error
+compiling LDChip.c...
+compiling usart.c...
+Target not created
+Build target 'V0.2 基本识别'
+compiling main.c...
+compiling Reg_RW.c...
+compiling LDChip.c...
+compiling usart.c...
+linking...
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?_PRINTCOM?USART
+    CALLER1: ?PR?EXTINT0HANDLER?MAIN
+    CALLER2: ?C_C51STARTUP
+Program Size: data=99.0 xdata=0 code=1914
+creating hex file from "..\obj\winning V0.2"...
+"..\obj\winning V0.2" - 0 Error(s), 1 Warning(s).
+Build target 'V0.2 基本识别'
+compiling main.c...
+compiling LDChip.c...
+linking...
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?_PRINTCOM?USART
+    CALLER1: ?PR?EXTINT0HANDLER?MAIN
+    CALLER2: ?C_C51STARTUP
+Program Size: data=99.0 xdata=0 code=1914
+creating hex file from "..\obj\winning V0.2"...
+"..\obj\winning V0.2" - 0 Error(s), 1 Warning(s).
+Build target 'V0.2 基本识别'
+linking...
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?_PRINTCOM?USART
+    CALLER1: ?PR?EXTINT0HANDLER?MAIN
+    CALLER2: ?C_C51STARTUP
+Program Size: data=99.0 xdata=0 code=1914
+creating hex file from "..\obj\winning V0.2"...
+"..\obj\winning V0.2" - 0 Error(s), 1 Warning(s).

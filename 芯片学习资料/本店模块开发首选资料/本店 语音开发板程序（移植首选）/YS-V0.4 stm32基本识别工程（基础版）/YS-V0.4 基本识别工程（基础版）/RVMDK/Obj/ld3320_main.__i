@@ -1,0 +1,1 @@
+-c --device DARMSTM -g -O0 --apcs=interwork -I..\M3lib\inc -I..\user -I..\LD_Driver -I "C:\Ding program file\keil\\ARM\INC\ST\STM32F10x" -DUSE_STDPERIPH_DRIVER -o ".\Obj\ld3320_main.o" --omf_browse ".\Obj\ld3320_main.crf" --depend ".\Obj\ld3320_main.d" "..\LD_Driver\LD3320_main.c"
