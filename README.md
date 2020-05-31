@@ -1,5 +1,6 @@
 ### LD3320模块(51版)
 ![LD3320](https://gitee.com/ClimbSnailQ/Project_Image/raw/master/LD3320_For_51Contrl/LD3320.jpg)
+
 本程序"语音识别--(口令模式高级版)"基于网上公开的资料改进。
 
 语音识别--(口令模式高级版)代码的视频讲解点击B站[链接](https://b23.tv/BV1Hf4y127Fc) https://b23.tv/BV1Hf4y127Fc ,记得一键三连。
